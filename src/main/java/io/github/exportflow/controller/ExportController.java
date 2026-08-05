@@ -1,11 +1,14 @@
 package io.github.exportflow.controller;
 
+import io.github.exportflow.common.PageResult;
+import io.github.exportflow.dto.template.ExportBookTemplate;
 import io.github.exportflow.dto.template.ExportUserTemplate;
+import io.github.exportflow.entity.Book;
 import io.github.exportflow.entity.User;
 import io.github.exportflow.service.ExportService;
-import io.github.exportflow.common.PageResult;
 import io.github.exportflow.utils.ReflectUtils;
-import io.github.exportflow.utils.UserDataUtils;
+import io.github.exportflow.utils.data.BookDataUtils;
+import io.github.exportflow.utils.data.UserDataUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -31,7 +34,69 @@ public class ExportController {
     private UserDataUtils userDataUtils;
 
     @Resource
+    private BookDataUtils bookDataUtils;
+
+    @Resource
     private ExportService exportService;
+
+    @RequestMapping("books")
+    public void exportBooks(HttpServletResponse response) throws UnsupportedEncodingException {
+        log.info("start export book data");
+
+        // 获取表头
+        List<ExportBookTemplate> headers = bookDataUtils.getHeaders();
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("图书数据");
+        Row row = sheet.createRow(0);
+        for (int i = 0; i < headers.size(); i++) {
+            Cell cell = row.createCell(i);
+            cell.setCellValue(headers.get(i).getTitle());
+        }
+
+        int pageSize = 2;
+        PageResult<Book> bookPageResult = exportService.queryBookByPage(1l, pageSize);
+        int rowNum = 1;
+        List<Book> bookData = bookPageResult.getList();
+        for (int i = 0; i < bookData.size(); i++) {
+            row = sheet.createRow(rowNum);
+            for (int j = 0; j < headers.size(); j++) {
+                String fieldValue = ReflectUtils.getFieldValue(bookData.get(i), headers.get(j).getColumn());
+                row.createCell(j).setCellValue(fieldValue);
+            }
+            rowNum++;
+        }
+
+        if (bookPageResult.hasNextPage()) {
+            bookPageResult = exportService.queryBookByPage(bookPageResult.getCurrentPage() + 1, pageSize);
+            bookData = bookPageResult.getList();
+            for (int i = 0; i < bookData.size(); i++) {
+                row = sheet.createRow(rowNum);
+                for (int j = 0; j < headers.size(); j++) {
+                    String fieldValue = ReflectUtils.getFieldValue(bookData.get(i), headers.get(j).getColumn());
+                    row.createCell(j).setCellValue(fieldValue);
+                }
+                rowNum++;
+            }
+        }
+
+        // 设置响应头
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        String fileName = URLEncoder.encode("图书数据.xlsx", "UTF-8");
+        response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
+
+        // 输出流
+        try (OutputStream outputStream = response.getOutputStream()) {
+            workbook.write(outputStream);
+            outputStream.flush();
+            workbook.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        log.info("end export book data");
+    }
+
 
     @RequestMapping("/users")
     public void exportUsers(HttpServletResponse response) throws UnsupportedEncodingException {

@@ -1,10 +1,10 @@
 package io.github.exportflow.utils;
 
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Slf4j
 public class ReflectUtils {
@@ -26,17 +26,17 @@ public class ReflectUtils {
                 return value.toString();
             } else if (value instanceof Double) {
                 return value.toString();
-            }else if (value instanceof Float) {
+            } else if (value instanceof Float) {
                 return value.toString();
             } else if (value instanceof Boolean) {
                 return value.toString();
-            } else if (value instanceof Data) {
-                return value.toString();
+            } else if (value instanceof Date) {
+                return DateUtils.formatDateTime((Date) value);
             } else if (value instanceof BigDecimal) {
                 return value.toString();
             }
             log.info("fieldName:{},value:{}", fieldName, value);
-            return (String)field.get(obj);
+            return (String) field.get(obj);
         } catch (Exception e) {
             log.error("getFieldValue err", e);
             return null;
