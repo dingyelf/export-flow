@@ -1,6 +1,6 @@
 package io.github.exportflow.utils;
 
-import io.github.exportflow.dto.ExportUserTemplate;
+import io.github.exportflow.dto.template.ExportUserTemplate;
 import io.github.exportflow.entity.User;
 import org.springframework.stereotype.Component;
 

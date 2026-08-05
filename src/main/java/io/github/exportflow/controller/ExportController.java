@@ -1,7 +1,9 @@
 package io.github.exportflow.controller;
 
-import io.github.exportflow.dto.ExportUserTemplate;
+import io.github.exportflow.dto.template.ExportUserTemplate;
 import io.github.exportflow.entity.User;
+import io.github.exportflow.service.ExportService;
+import io.github.exportflow.common.PageResult;
 import io.github.exportflow.utils.ReflectUtils;
 import io.github.exportflow.utils.UserDataUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +20,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -28,6 +29,9 @@ public class ExportController {
 
     @Resource
     private UserDataUtils userDataUtils;
+
+    @Resource
+    private ExportService exportService;
 
     @RequestMapping("/users")
     public void exportUsers(HttpServletResponse response) throws UnsupportedEncodingException {
@@ -47,18 +51,41 @@ public class ExportController {
             cell.setCellValue(exportUsersTemplate.get(i).getTitle());
         }
 
-        // 创建数据行
-        List<User> userData = userDataUtils.getUserData();
-        for (int i = 0; i < userData.size(); i++) {
-            row = sheet.createRow(i + 1);
+        long pageNum = 1;
+        int pageSize = 2;
 
+        // 创建数据行
+        PageResult<User> userPageResult = exportService.queryUsersByPage(pageNum, pageSize);
+
+        int rowNum = 1;
+
+        List<User> userData = userPageResult.getList();
+        for (int i = 0; i < userData.size(); i++) {
+            row = sheet.createRow(rowNum);
             int k = 0;
             while (k < exportUsersTemplate.size()) {
                 String value = ReflectUtils.getFieldValue(userData.get(i), exportUsersTemplate.get(k).getColumn());
                 row.createCell(k).setCellValue(value);
                 k++;
             }
+            rowNum++;
         }
+
+        while (userPageResult.hasNextPage()) {
+            userPageResult = exportService.queryUsersByPage(userPageResult.getCurrentPage() + 1, pageSize);
+            userData = userPageResult.getList();
+            for (int i = 0; i < userData.size(); i++) {
+                row = sheet.createRow(rowNum);
+                int k = 0;
+                while (k < exportUsersTemplate.size()) {
+                    String value = ReflectUtils.getFieldValue(userData.get(i), exportUsersTemplate.get(k).getColumn());
+                    row.createCell(k).setCellValue(value);
+                    k++;
+                }
+                rowNum++;
+            }
+        }
+
         // 设置响应头
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         String fileName = URLEncoder.encode("用户数据.xlsx", "UTF-8");
@@ -73,10 +100,6 @@ public class ExportController {
             e.printStackTrace();
         }
         log.info("end export user data");
-    }
-
-    private List<String> getHeaders() {
-        return Arrays.asList("ID", "姓名", "年龄", "地址");
     }
 
 }

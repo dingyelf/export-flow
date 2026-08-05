@@ -1,4 +1,4 @@
-package io.github.exportflow.dto;
+package io.github.exportflow.dto.template;
 
 import lombok.*;
 
