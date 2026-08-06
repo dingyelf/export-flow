@@ -26,7 +26,8 @@ public class BookDataUtils {
                 new Book("2", "《Spring实战》", "50", "张小明", new java.util.Date(), 1),
                 new Book("3", "《JavaWeb实战》", "50", "王小东", new java.util.Date(), 1),
                 new Book("4", "《MyBatis实战》", "50", "李大嘴", new java.util.Date(), 1),
-                new Book("5", "《MySQL实战》", "50", "赵公", new java.util.Date(), 1)
+                new Book("5", "《MySQL实战》", "50", "赵公公", new java.util.Date(), 1),
+                new Book("6", "《JQuery实战》", "50", "one coder", new java.util.Date(), 0)
         );
     }
 

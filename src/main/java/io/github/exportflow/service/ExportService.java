@@ -22,14 +22,10 @@ public class ExportService {
     private BookDataUtils bookDataUtils;
 
     public PageResult<Book> queryBookByPage(Long pageNum, int pageSize) {
+        log.info("queryBookByPage start with param: pageNum = {}, pageSize = {}", pageNum, pageSize);
         List<Book> bookData = bookDataUtils.getBookData();
-        Long count = (long) bookData.size();
-        PageResult<Book> pageResult = new PageResult<>();
-        pageResult.setCurrentPage(pageNum == 0 ? 1 : pageNum);
-        pageResult.setPageSize(pageSize);
-        pageResult.setTotalPage((long) (count / pageSize + 1));
-        pageResult.setCount(count);
-        pageResult.setList(bookData.subList((int) ((pageNum - 1) * pageSize), (int) ((pageNum * (long) pageSize) > count ? count : (pageNum * pageSize))));
+        PageResult<Book> pageResult = PageResult.paginate(bookData, pageNum, pageSize);
+        log.info("queryBookByPage end");
         return pageResult;
     }
 
@@ -37,15 +33,9 @@ public class ExportService {
     public PageResult<User> queryUsersByPage(Long pageNum, int pageSize) {
         log.info("queryUsersByPage start with param: pageNum = {}, pageSize = {}", pageNum, pageSize);
         List<User> userData = userDataUtils.getUserData();
-        Long count = (long) userData.size();
-        PageResult<User> pageResult = new PageResult<>();
-        pageResult.setCurrentPage(pageNum == 0 ? 1 : pageNum);
-        pageResult.setPageSize(pageSize);
-        pageResult.setTotalPage((long) (count / pageSize + 1));
-        pageResult.setCount(count);
-        pageResult.setList(userData.subList((int) ((pageNum - 1) * pageSize), (int) ((pageNum * (long) pageSize) > count ? count : (pageNum * pageSize))));
+        PageResult<User> paginate = PageResult.paginate(userData, pageNum, pageSize);
         log.info("queryUsersByPage end");
-        return pageResult;
+        return paginate;
     }
 
 }

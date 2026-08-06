@@ -67,7 +67,7 @@ public class ExportController {
             rowNum++;
         }
 
-        if (bookPageResult.hasNextPage()) {
+        while (bookPageResult.hasNextPage()) {
             bookPageResult = exportService.queryBookByPage(bookPageResult.getCurrentPage() + 1, pageSize);
             bookData = bookPageResult.getList();
             for (int i = 0; i < bookData.size(); i++) {
