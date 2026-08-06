@@ -4,6 +4,7 @@ import io.github.exportflow.common.PageResult;
 import io.github.exportflow.dto.template.ExportTemplate;
 import io.github.exportflow.entity.Book;
 import io.github.exportflow.entity.User;
+import io.github.exportflow.handler.ExcelExportHandler;
 import io.github.exportflow.service.ExportService;
 import io.github.exportflow.utils.ReflectUtils;
 import io.github.exportflow.utils.data.BookDataUtils;
@@ -55,7 +56,7 @@ public class ExportController {
         }
 
         int pageSize = 2;
-        PageResult<Book> bookPageResult = exportService.queryBookByPage(1L, pageSize);
+        PageResult<Book> bookPageResult = exportService.queryBookByPage(1, pageSize);
         int rowNum = 1;
         List<Book> bookData = bookPageResult.getList();
         for (int i = 0; i < bookData.size(); i++) {
@@ -97,7 +98,6 @@ public class ExportController {
         log.info("end export book data");
     }
 
-
     @RequestMapping("/users")
     public void exportUsers(HttpServletResponse response) throws UnsupportedEncodingException {
         log.info("start export user data");
@@ -108,15 +108,15 @@ public class ExportController {
         Sheet sheet = workbook.createSheet("用户数据");
 
         // 创建表头
-        List<ExportTemplate> exportUsersTemplate = userDataUtils.getExportUsersTemplate();
+        List<ExportTemplate> headers = userDataUtils.getHeaders();
 
         Row row = sheet.createRow(0);
-        for (int i = 0; i < exportUsersTemplate.size(); i++) {
+        for (int i = 0; i < headers.size(); i++) {
             Cell cell = row.createCell(i);
-            cell.setCellValue(exportUsersTemplate.get(i).getTitle());
+            cell.setCellValue(headers.get(i).getTitle());
         }
 
-        long pageNum = 1;
+        Integer pageNum = 1;
         int pageSize = 2;
 
         // 创建数据行
@@ -128,8 +128,8 @@ public class ExportController {
         for (int i = 0; i < userData.size(); i++) {
             row = sheet.createRow(rowNum);
             int k = 0;
-            while (k < exportUsersTemplate.size()) {
-                String value = ReflectUtils.getFieldValue(userData.get(i), exportUsersTemplate.get(k).getColumn());
+            while (k < headers.size()) {
+                String value = ReflectUtils.getFieldValue(userData.get(i), headers.get(k).getColumn());
                 row.createCell(k).setCellValue(value);
                 k++;
             }
@@ -142,8 +142,8 @@ public class ExportController {
             for (int i = 0; i < userData.size(); i++) {
                 row = sheet.createRow(rowNum);
                 int k = 0;
-                while (k < exportUsersTemplate.size()) {
-                    String value = ReflectUtils.getFieldValue(userData.get(i), exportUsersTemplate.get(k).getColumn());
+                while (k < headers.size()) {
+                    String value = ReflectUtils.getFieldValue(userData.get(i), headers.get(k).getColumn());
                     row.createCell(k).setCellValue(value);
                     k++;
                 }
@@ -165,6 +165,50 @@ public class ExportController {
             e.printStackTrace();
         }
         log.info("end export user data");
+    }
+
+    private <T> void export(ExcelExportHandler excelExportHandler, Integer pageNum, Integer pageSize, HttpServletResponse response) {
+        // 创建工作簿
+        Workbook workbook = new XSSFWorkbook();
+
+        // 创建工作表
+        Sheet sheet = workbook.createSheet(excelExportHandler.getSheetName());
+
+        // 创建表头
+        List<ExportTemplate> headers = excelExportHandler.getHeaders();
+        Row row = sheet.createRow(0);
+        for (int i = 0; i < headers.size(); i++) {
+            row.createCell(i).setCellValue(headers.get(i).getTitle());
+        }
+
+        // 创建数据行
+        PageResult<T> pageResult = excelExportHandler.queryPage(pageNum, pageSize);
+        int rowNum = 1;
+        do {
+            List<T> list = pageResult.getList();
+            for (int i = 0; i < list.size(); i++) {
+                sheet.createRow(rowNum);
+                for (int j = 0; j < headers.size(); j++) {
+                    String fieldValue = ReflectUtils.getFieldValue(list.get(i), headers.get(j).getColumn());
+                    row.createCell(j).setCellValue(fieldValue);
+                }
+            }
+            rowNum++;
+        } while (pageResult != null && (pageResult = excelExportHandler.queryPage(pageResult.getCurrentPage() + 1, pageSize)).hasNextPage());
+
+        // 设置响应头
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        String fileName = URLEncoder.encode("用户数据.xlsx", StandardCharsets.UTF_8);
+        response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
+
+        // 输出流
+        try (OutputStream outputStream = response.getOutputStream()) {
+            workbook.write(outputStream);
+            outputStream.flush();
+            workbook.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

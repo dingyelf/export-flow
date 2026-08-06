@@ -16,20 +16,20 @@ public class PageResult<T> {
     public List<T> list;
 
     // 总数
-    public Long count;
+    public Integer count;
 
     // 每页数量
     public Integer pageSize;
 
     // 当前页数
-    private Long currentPage;
+    private Integer currentPage;
 
     // 总页数
-    public Long totalPage;
+    public Integer totalPage;
 
-    public Long getTotalPage() {
+    public Integer getTotalPage() {
         if (pageSize == null || pageSize <= 0) {
-            return 0L;
+            return 0;
         }
         return count % pageSize == 0 ? count / pageSize : count / pageSize + 1;
     }
@@ -38,27 +38,27 @@ public class PageResult<T> {
         return currentPage < getTotalPage();
     }
 
-    public static <T> PageResult<T> paginate(List<T> allData, Long pageNum, Integer pageSize) {
+    public static <T> PageResult<T> paginate(List<T> allData, Integer pageNum, Integer pageSize) {
         if (allData == null || allData.isEmpty()) {
             PageResult<T> r = new PageResult<>();
             r.setList(Collections.EMPTY_LIST);
-            r.setCount(0L);
+            r.setCount(0);
             r.setPageSize(pageSize);
             r.setCurrentPage(pageNum);
             return r;
         }
-        long count = allData.size();
-        long fromIndex = (pageNum - 1) * pageSize;
+        Integer count = allData.size();
+        Integer fromIndex = (pageNum - 1) * pageSize;
         if (fromIndex >= count) {
             PageResult<T> r = new PageResult<>();
             r.setList(Collections.EMPTY_LIST);
-            r.setCount(0L);
+            r.setCount(0);
             r.setPageSize(pageSize);
             r.setCurrentPage(pageNum);
             return r;
         }
-        long toIndex = Math.min(fromIndex + pageSize , count);
-        List<T> page = allData.subList((int) fromIndex, (int) toIndex);
+        Integer toIndex = Math.min(fromIndex + pageSize , count);
+        List<T> page = allData.subList(fromIndex, toIndex);
         PageResult<T> r = new PageResult<>();
         r.setList(page);
         r.setCount(count);

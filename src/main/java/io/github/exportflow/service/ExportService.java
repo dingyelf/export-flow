@@ -21,7 +21,7 @@ public class ExportService {
     @Resource
     private BookDataUtils bookDataUtils;
 
-    public PageResult<Book> queryBookByPage(Long pageNum, int pageSize) {
+    public PageResult<Book> queryBookByPage(Integer pageNum, int pageSize) {
         log.info("queryBookByPage start with param: pageNum = {}, pageSize = {}", pageNum, pageSize);
         List<Book> bookData = bookDataUtils.getBookData();
         PageResult<Book> pageResult = PageResult.paginate(bookData, pageNum, pageSize);
@@ -30,7 +30,7 @@ public class ExportService {
     }
 
 
-    public PageResult<User> queryUsersByPage(Long pageNum, int pageSize) {
+    public PageResult<User> queryUsersByPage(Integer pageNum, int pageSize) {
         log.info("queryUsersByPage start with param: pageNum = {}, pageSize = {}", pageNum, pageSize);
         List<User> userData = userDataUtils.getUserData();
         PageResult<User> paginate = PageResult.paginate(userData, pageNum, pageSize);

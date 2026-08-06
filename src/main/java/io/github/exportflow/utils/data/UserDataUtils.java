@@ -10,7 +10,7 @@ import java.util.List;
 @Component
 public class UserDataUtils {
 
-    public List<ExportTemplate> getExportUsersTemplate() {
+    public List<ExportTemplate> getHeaders() {
         return Arrays.asList(
                 new ExportTemplate("Id", "id"),
                 new ExportTemplate("姓名", "username"),
