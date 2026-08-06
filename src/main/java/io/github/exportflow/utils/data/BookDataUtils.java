@@ -1,6 +1,6 @@
 package io.github.exportflow.utils.data;
 
-import io.github.exportflow.dto.template.ExportBookTemplate;
+import io.github.exportflow.dto.template.ExportTemplate;
 import io.github.exportflow.entity.Book;
 import org.springframework.stereotype.Component;
 
@@ -10,13 +10,13 @@ import java.util.List;
 @Component
 public class BookDataUtils {
 
-    public List<ExportBookTemplate> getHeaders() {
+    public List<ExportTemplate> getHeaders() {
         return Arrays.asList(
-                new ExportBookTemplate("编号", "id"),
-                new ExportBookTemplate("书名", "bookName"),
-                new ExportBookTemplate("价格", "price"),
-                new ExportBookTemplate("作者", "author"),
-                new ExportBookTemplate("出版时间", "publishTime")
+                new ExportTemplate("编号", "id"),
+                new ExportTemplate("书名", "bookName"),
+                new ExportTemplate("价格", "price"),
+                new ExportTemplate("作者", "author"),
+                new ExportTemplate("出版时间", "publishTime")
         );
     }
 

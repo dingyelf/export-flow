@@ -1,8 +1,7 @@
 package io.github.exportflow.controller;
 
 import io.github.exportflow.common.PageResult;
-import io.github.exportflow.dto.template.ExportBookTemplate;
-import io.github.exportflow.dto.template.ExportUserTemplate;
+import io.github.exportflow.dto.template.ExportTemplate;
 import io.github.exportflow.entity.Book;
 import io.github.exportflow.entity.User;
 import io.github.exportflow.service.ExportService;
@@ -23,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Slf4j
@@ -44,7 +44,7 @@ public class ExportController {
         log.info("start export book data");
 
         // 获取表头
-        List<ExportBookTemplate> headers = bookDataUtils.getHeaders();
+        List<ExportTemplate> headers = bookDataUtils.getHeaders();
 
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("图书数据");
@@ -55,7 +55,7 @@ public class ExportController {
         }
 
         int pageSize = 2;
-        PageResult<Book> bookPageResult = exportService.queryBookByPage(1l, pageSize);
+        PageResult<Book> bookPageResult = exportService.queryBookByPage(1L, pageSize);
         int rowNum = 1;
         List<Book> bookData = bookPageResult.getList();
         for (int i = 0; i < bookData.size(); i++) {
@@ -82,7 +82,7 @@ public class ExportController {
 
         // 设置响应头
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        String fileName = URLEncoder.encode("图书数据.xlsx", "UTF-8");
+        String fileName = URLEncoder.encode("图书数据.xlsx", StandardCharsets.UTF_8);
         response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
 
         // 输出流
@@ -108,7 +108,7 @@ public class ExportController {
         Sheet sheet = workbook.createSheet("用户数据");
 
         // 创建表头
-        List<ExportUserTemplate> exportUsersTemplate = userDataUtils.getExportUsersTemplate();
+        List<ExportTemplate> exportUsersTemplate = userDataUtils.getExportUsersTemplate();
 
         Row row = sheet.createRow(0);
         for (int i = 0; i < exportUsersTemplate.size(); i++) {
@@ -153,7 +153,7 @@ public class ExportController {
 
         // 设置响应头
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        String fileName = URLEncoder.encode("用户数据.xlsx", "UTF-8");
+        String fileName = URLEncoder.encode("用户数据.xlsx", StandardCharsets.UTF_8);
         response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
 
         // 输出流

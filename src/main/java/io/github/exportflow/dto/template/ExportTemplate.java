@@ -7,7 +7,7 @@ import lombok.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ExportBookTemplate {
+public class ExportTemplate {
     private String title;
     private String column;
 }

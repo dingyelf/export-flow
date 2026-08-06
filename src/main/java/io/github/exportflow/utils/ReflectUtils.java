@@ -9,6 +9,13 @@ import java.util.Date;
 @Slf4j
 public class ReflectUtils {
 
+    /**
+     * 获取字段值
+     *
+     * @param obj
+     * @param fieldName
+     * @return
+     */
     public static String getFieldValue(Object obj, String fieldName) {
         if (obj == null) {
             return null;

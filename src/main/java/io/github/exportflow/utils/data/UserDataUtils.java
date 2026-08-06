@@ -1,6 +1,6 @@
 package io.github.exportflow.utils.data;
 
-import io.github.exportflow.dto.template.ExportUserTemplate;
+import io.github.exportflow.dto.template.ExportTemplate;
 import io.github.exportflow.entity.User;
 import org.springframework.stereotype.Component;
 
@@ -10,13 +10,13 @@ import java.util.List;
 @Component
 public class UserDataUtils {
 
-    public List<ExportUserTemplate> getExportUsersTemplate() {
+    public List<ExportTemplate> getExportUsersTemplate() {
         return Arrays.asList(
-                new ExportUserTemplate("姓名", "username"),
-                new ExportUserTemplate("性别", "sex"),
-                new ExportUserTemplate("年龄", "age"),
-                new ExportUserTemplate("邮箱", "email"),
-                new ExportUserTemplate("地址", "address")
+                new ExportTemplate("姓名", "username"),
+                new ExportTemplate("性别", "gender"),
+                new ExportTemplate("年龄", "age"),
+                new ExportTemplate("邮箱", "email"),
+                new ExportTemplate("地址", "address")
         );
     }
 
