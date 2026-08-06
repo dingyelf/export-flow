@@ -15,8 +15,6 @@ public interface ExcelExportHandler<T> {
 
     String getFileName();
 
-    List<T> getData(PageResult<T> list);
-
     PageResult<T> queryPage(int pageNum, int pageSize);
 
 }

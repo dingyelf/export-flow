@@ -5,10 +5,7 @@ import io.github.exportflow.dto.template.ExportTemplate;
 import io.github.exportflow.handler.ExcelExportHandler;
 import io.github.exportflow.handler.impl.BookExportHandler;
 import io.github.exportflow.handler.impl.UserExportHandler;
-import io.github.exportflow.service.ExportService;
 import io.github.exportflow.utils.ReflectUtils;
-import io.github.exportflow.utils.data.BookDataUtils;
-import io.github.exportflow.utils.data.UserDataUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -29,15 +26,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/export")
 public class ExportController {
-
-    @Resource
-    private UserDataUtils userDataUtils;
-
-    @Resource
-    private BookDataUtils bookDataUtils;
-
-    @Resource
-    private ExportService exportService;
 
     @Resource
     private UserExportHandler userExportHandler;

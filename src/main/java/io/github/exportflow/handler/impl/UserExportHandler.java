@@ -2,7 +2,6 @@ package io.github.exportflow.handler.impl;
 
 import io.github.exportflow.common.PageResult;
 import io.github.exportflow.dto.template.ExportTemplate;
-import io.github.exportflow.entity.User;
 import io.github.exportflow.handler.ExcelExportHandler;
 import io.github.exportflow.utils.data.UserDataUtils;
 import org.springframework.stereotype.Component;
@@ -29,11 +28,6 @@ public class UserExportHandler implements ExcelExportHandler {
     @Override
     public String getFileName() {
         return "用户数据.xlsx";
-    }
-
-    @Override
-    public List<User> getData(PageResult list) {
-        return List.of();
     }
 
     @Override

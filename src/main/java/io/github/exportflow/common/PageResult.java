@@ -57,7 +57,7 @@ public class PageResult<T> {
             r.setCurrentPage(pageNum);
             return r;
         }
-        Integer toIndex = Math.min(fromIndex + pageSize , count);
+        Integer toIndex = Math.min(fromIndex + pageSize, count);
         List<T> page = allData.subList(fromIndex, toIndex);
         PageResult<T> r = new PageResult<>();
         r.setList(page);
