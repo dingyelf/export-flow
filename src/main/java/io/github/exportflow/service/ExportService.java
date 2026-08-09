@@ -8,7 +8,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
 
 @Slf4j
 @Service
@@ -17,7 +16,7 @@ public class ExportService {
     @Resource
     private ExcelWriter excelWriter;
 
-    public <T> Workbook exportData(ExcelExportHandler handler, Integer pageNum, Integer pageSize, HttpServletResponse response) {
+    public <T> Workbook exportData(ExcelExportHandler handler, Integer pageNum, Integer pageSize) {
         // 创建工作簿
         Workbook workbook = excelWriter.createWorkbook(handler.getSheetName());
 

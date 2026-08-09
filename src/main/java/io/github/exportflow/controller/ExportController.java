@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
@@ -33,7 +34,7 @@ public class ExportController {
     public void exportBooks(HttpServletResponse response) throws IOException {
         log.info("start export book data");
 
-        Workbook workbook = exportService.exportData(bookExportHandler, 1, EXPORT_PAGE_SIZE, response);
+        Workbook workbook = exportService.exportData(bookExportHandler, 1, EXPORT_PAGE_SIZE);
 
         // 设置响应头
         writeResponse(response, workbook, bookExportHandler.getFileName());
@@ -45,7 +46,7 @@ public class ExportController {
     public void exportUsers(HttpServletResponse response) throws IOException {
         log.info("start export user data");
 
-        Workbook workbook = exportService.exportData(userExportHandler, 1, EXPORT_PAGE_SIZE, response);
+        Workbook workbook = exportService.exportData(userExportHandler, 1, EXPORT_PAGE_SIZE);
 
         // 设置响应头
         writeResponse(response, workbook, userExportHandler.getFileName());
@@ -53,11 +54,17 @@ public class ExportController {
         log.info("end export user data");
     }
 
-    private void writeResponse(HttpServletResponse response, Workbook workbook, String fileName) throws IOException {
+    private void writeResponse(HttpServletResponse response, Workbook workbook, String fileName) {
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
-        workbook.write(response.getOutputStream());
-        workbook.close();
+        try (ServletOutputStream outputStream = response.getOutputStream()){
+            workbook.write(outputStream);
+            response.flushBuffer();
+            workbook.close();
+        } catch (IOException e) {
+            log.error("write excel error", e);
+        }
+
     }
 
 
