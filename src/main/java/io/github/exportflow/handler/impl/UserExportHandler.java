@@ -2,18 +2,20 @@ package io.github.exportflow.handler.impl;
 
 import io.github.exportflow.common.PageResult;
 import io.github.exportflow.dto.template.ExportTemplate;
+import io.github.exportflow.entity.User;
 import io.github.exportflow.handler.ExcelExportHandler;
-import io.github.exportflow.utils.data.UserDataUtils;
+import io.github.exportflow.mapper.UserMapper;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 import java.util.List;
 
 @Component
-public class UserExportHandler implements ExcelExportHandler {
+public class UserExportHandler implements ExcelExportHandler<User> {
 
     @Resource
-    private UserDataUtils userDataUtils;
+    private UserMapper userMapper;
 
     @Override
     public String getSheetName() {
@@ -22,7 +24,14 @@ public class UserExportHandler implements ExcelExportHandler {
 
     @Override
     public List<ExportTemplate> getHeaders() {
-        return userDataUtils.getHeaders();
+        return Arrays.asList(
+                new ExportTemplate("Id", "id"),
+                new ExportTemplate("姓名", "username"),
+                new ExportTemplate("性别", "gender"),
+                new ExportTemplate("年龄", "age"),
+                new ExportTemplate("邮箱", "email"),
+                new ExportTemplate("地址", "address")
+        );
     }
 
     @Override
@@ -31,7 +40,16 @@ public class UserExportHandler implements ExcelExportHandler {
     }
 
     @Override
-    public PageResult queryPage(int pageNum, int pageSize) {
-        return PageResult.paginate(userDataUtils.getUserData(), pageNum, pageSize);
+    public PageResult<User> queryPage(int pageNum, int pageSize) {
+        int count = userMapper.count();
+        int offset = (pageNum - 1) * pageSize;
+        List<User> list = userMapper.queryUser(offset, pageSize);
+
+        PageResult<User> result = new PageResult<>();
+        result.setCount(count);
+        result.setPageSize(pageSize);
+        result.setCurrentPage(pageNum);
+        result.setList(list);
+        return result;
     }
 }
