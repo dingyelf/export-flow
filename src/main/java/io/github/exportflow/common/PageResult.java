@@ -24,9 +24,6 @@ public class PageResult<T> {
     // 当前页数
     private Integer currentPage;
 
-    // 总页数
-    public Integer totalPage;
-
     public Integer getTotalPage() {
         if (pageSize == null || pageSize <= 0) {
             return 0;

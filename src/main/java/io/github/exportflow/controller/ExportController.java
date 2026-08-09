@@ -4,12 +4,14 @@ import io.github.exportflow.handler.impl.BookExportHandler;
 import io.github.exportflow.handler.impl.UserExportHandler;
 import io.github.exportflow.service.ExportService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 
 @Slf4j
 @RestController
@@ -25,18 +27,38 @@ public class ExportController {
     @Resource
     private ExportService exportService;
 
-    @RequestMapping("books")
-    public void exportBooks(HttpServletResponse response) throws UnsupportedEncodingException {
+    private static final int EXPORT_PAGE_SIZE = 2;
+
+    @GetMapping("/books")
+    public void exportBooks(HttpServletResponse response) throws IOException {
         log.info("start export book data");
-        exportService.exportData(bookExportHandler, 1, 2, response);
+
+        Workbook workbook = exportService.exportData(bookExportHandler, 1, EXPORT_PAGE_SIZE, response);
+
+        // 设置响应头
+        writeResponse(response, workbook, bookExportHandler.getFileName());
+
         log.info("end export book data");
     }
 
-    @RequestMapping("/users")
-    public void exportUsers(HttpServletResponse response) throws UnsupportedEncodingException {
+    @GetMapping("/users")
+    public void exportUsers(HttpServletResponse response) throws IOException {
         log.info("start export user data");
-        exportService.exportData(userExportHandler, 1, 2, response);
+
+        Workbook workbook = exportService.exportData(userExportHandler, 1, EXPORT_PAGE_SIZE, response);
+
+        // 设置响应头
+        writeResponse(response, workbook, userExportHandler.getFileName());
+
         log.info("end export user data");
     }
+
+    private void writeResponse(HttpServletResponse response, Workbook workbook, String fileName) throws IOException {
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
+        workbook.write(response.getOutputStream());
+        workbook.close();
+    }
+
 
 }
