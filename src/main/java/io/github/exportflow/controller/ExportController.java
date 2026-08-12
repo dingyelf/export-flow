@@ -3,6 +3,7 @@ package io.github.exportflow.controller;
 import io.github.exportflow.handler.impl.BookExportHandler;
 import io.github.exportflow.handler.impl.UserExportHandler;
 import io.github.exportflow.service.ExportService;
+import io.github.exportflow.utils.DateUtils;
 import jakarta.annotation.Resource;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.Date;
 
 @Slf4j
 @RestController
@@ -56,7 +59,13 @@ public class ExportController {
 
     private void writeResponse(HttpServletResponse response, Workbook workbook, String fileName) {
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
+        String encodeFileName = null;
+        try {
+            encodeFileName = URLEncoder.encode(fileName, "UTF-8");
+        } catch (Exception e) {
+            encodeFileName = DateUtils.formatDateTime(new Date());
+        }
+        response.setHeader("Content-Disposition", "attachment;filename=" + encodeFileName);
         try (ServletOutputStream outputStream = response.getOutputStream()){
             workbook.write(outputStream);
             response.flushBuffer();
