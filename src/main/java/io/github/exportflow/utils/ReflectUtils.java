@@ -42,7 +42,6 @@ public class ReflectUtils {
             } else if (value instanceof BigDecimal) {
                 return value.toString();
             }
-            log.info("fieldName:{},value:{}", fieldName, value);
             return (String) field.get(obj);
         } catch (Exception e) {
             log.error("getFieldValue err", e);

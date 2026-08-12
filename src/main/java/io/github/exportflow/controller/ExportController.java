@@ -3,15 +3,15 @@ package io.github.exportflow.controller;
 import io.github.exportflow.handler.impl.BookExportHandler;
 import io.github.exportflow.handler.impl.UserExportHandler;
 import io.github.exportflow.service.ExportService;
+import jakarta.annotation.Resource;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Slf4j
@@ -28,7 +28,7 @@ public class ExportController {
     @Resource
     private ExportService exportService;
 
-    private static final int EXPORT_PAGE_SIZE = 2;
+    private static final int EXPORT_PAGE_SIZE = 2000;
 
     @GetMapping("/books")
     public void exportBooks(HttpServletResponse response) throws IOException {

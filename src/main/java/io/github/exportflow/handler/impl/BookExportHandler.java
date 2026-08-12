@@ -5,9 +5,9 @@ import io.github.exportflow.dto.template.ExportTemplate;
 import io.github.exportflow.entity.Book;
 import io.github.exportflow.handler.ExcelExportHandler;
 import io.github.exportflow.mapper.BookMapper;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.List;
 
